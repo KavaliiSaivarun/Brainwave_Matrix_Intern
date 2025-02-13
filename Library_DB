@@ -1,0 +1,89 @@
+
+-- Create Table: Book Categories
+CREATE TABLE BookCategories (
+    category_id INT IDENTITY(1,1) PRIMARY KEY,
+    category_name VARCHAR(50) NOT NULL,
+    category_description VARCHAR(100),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create Table: Books
+CREATE TABLE Books (
+    book_id INT IDENTITY(1,1) PRIMARY KEY,
+    title VARCHAR(50) NOT NULL,
+    author VARCHAR(50) NOT NULL,
+    isbn VARCHAR(50) UNIQUE NOT NULL,
+    published_yr INT,
+    category_id INT,
+    total_copies INT CHECK (total_copies >= 0),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (category_id) REFERENCES BookCategories(category_id) ON DELETE CASCADE
+);
+
+-- Create Table: Members
+CREATE TABLE Members (
+    member_id INT IDENTITY(1,1) PRIMARY KEY,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    email VARCHAR(50) UNIQUE NOT NULL,
+    phone VARCHAR(50) UNIQUE NOT NULL,
+    join_date DATE NOT NULL,
+    membership_status VARCHAR(20) NOT NULL CHECK (membership_status IN ('Active', 'Inactive', 'Suspended'))
+);
+
+-- Create Table: Borrowings
+CREATE TABLE Borrowings (
+    borrowing_id INT IDENTITY(1,1) PRIMARY KEY,
+    book_id INT NOT NULL,
+    member_id INT NOT NULL,
+    borrow_date DATE NOT NULL,
+    due_date DATE NOT NULL,
+    return_date DATE NULL,
+    fine_amount DECIMAL(10,2) NULL,
+    borrow_status VARCHAR(50) NOT NULL,
+    FOREIGN KEY (book_id) REFERENCES Books(book_id) ON DELETE CASCADE,
+    FOREIGN KEY (member_id) REFERENCES Members(member_id) ON DELETE CASCADE
+);
+
+-- Insert into Book Categories
+INSERT INTO BookCategories (category_name, category_description) VALUES
+('Fiction', 'Fictional books'),
+('Non-Fiction', 'Based on real events'),
+('Science', 'Books related to science'),
+('History', 'Historical books'),
+('Technology', 'Tech-related books'),
+('Biography', 'Life stories of individuals'),
+('Mystery', 'Suspense and mystery books'),
+('Fantasy', 'Fantasy genre books'),
+('Romance', 'Love and relationship stories'),
+('Self-Help', 'Personal development books');
+
+-- Insert into Books
+INSERT INTO Books (title, author, isbn, published_yr, category_id, total_copies) VALUES
+('The Great Gatsby', 'F. Scott Fitzgerald', '9780743273565', 1925, 1, 5),
+('Sapiens', 'Yuval Noah Harari', '9780062316097', 2011, 2, 3),
+('A Brief History of Time', 'Stephen Hawking', '9780553380163', 1988, 3, 4),
+('The Art of War', 'Sun Tzu', '9781599869773', -500, 4, 2),
+('Clean Code', 'Robert C. Martin', '9780132350884', 2008, 5, 6),
+('Elon Musk', 'Ashlee Vance', '9780062301239', 2015, 6, 3),
+('Gone Girl', 'Gillian Flynn', '9780307588371', 2012, 7, 5),
+('Harry Potter', 'J.K. Rowling', '9780439708180', 1997, 8, 10),
+('Pride and Prejudice', 'Jane Austen', '9780141439518', 1813, 9, 8),
+('Atomic Habits', 'James Clear', '9780735211292', 2018, 10, 7);
+
+-- Insert into Members
+INSERT INTO Members (first_name, last_name, email, phone, join_date, membership_status) VALUES
+('Alice', 'Brown', 'alice@example.com', '1234567891', '2023-01-15', 'Active'),
+('Bob', 'Johnson', 'bob@example.com', '2345678912', '2023-02-10', 'Active'),
+('Charlie', 'Williams', 'charlie@example.com', '3456789123', '2023-03-05', 'Inactive'),
+('David', 'Smith', 'david@example.com', '4567891234', '2023-04-20', 'Suspended'),
+('Emily', 'Davis', 'emily@example.com', '5678912345', '2023-05-12', 'Active');
+
+-- Insert into Borrowings
+INSERT INTO Borrowings (book_id, member_id, borrow_date, due_date, return_date, fine_amount, borrow_status) VALUES
+(1, 1, '2024-02-01', '2024-02-10', '2024-02-09', 0.00, 'Returned'),
+(2, 2, '2024-02-05', '2024-02-15', NULL, NULL, 'Borrowed'),
+(3, 3, '2024-02-08', '2024-02-18', '2024-02-17', 0.00, 'Returned'),
+(4, 4, '2024-02-10', '2024-02-20', NULL, NULL, 'Borrowed');
+
+
